@@ -39,13 +39,13 @@ public class TaskManager {
     public void updateSubTask(SubTask subTask){
         subTasks.put(subTask.getId(), subTask);
         int epicId = subTask.getParentId();
-        Epic epic = epics.get(epicId);
-        epic.addChild(subTask.getId());
         recalculateEpicStatus(epicId);
     }
 
     public void updateEpic(Epic epic){
-        epics.put(epic.getId(), epic);
+        final Epic oldEpic = epics.get(epic.getId());
+        oldEpic.setName(epic.getName());
+        oldEpic.setDescription(epic.getDescription());
     }
 
     public ArrayList<Task> getAllTasksByType(TaskTypes taskType) {
@@ -62,6 +62,7 @@ public class TaskManager {
             case SUBTASK -> {
                 subTasks.clear();
                 for(Epic epic : epics.values()){
+                    epic.clearChildren();
                     recalculateEpicStatus(epic.getId());
                 }
             }
@@ -72,8 +73,8 @@ public class TaskManager {
         }
     }
 
-    public ArrayList<Task> getEpicSubTasks(int epicId){
-        ArrayList<Task> children = new ArrayList<>();
+    public ArrayList<SubTask> getEpicSubTasks(int epicId){
+        ArrayList<SubTask> children = new ArrayList<>();
         if(!epics.containsKey(epicId)){
             return children;
         }
@@ -104,6 +105,7 @@ public class TaskManager {
         }
         else if(subTasks.containsKey(id)){
             int parentId = subTasks.get(id).getParentId();
+            epics.get(parentId).removeChild(id);
             subTasks.remove(id);
             recalculateEpicStatus(parentId);
         }

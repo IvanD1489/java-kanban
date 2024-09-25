@@ -20,6 +20,14 @@ public class Epic extends Task{
         }
     }
 
+    public void removeChild(int childId){
+        this.childrenIds.remove(Integer.valueOf(childId));
+    }
+
+    public void clearChildren(){
+        childrenIds.clear();
+    }
+
     public ArrayList<Integer> getChildrenIds(){
         return this.childrenIds;
     }
