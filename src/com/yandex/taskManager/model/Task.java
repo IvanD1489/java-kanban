@@ -1,3 +1,5 @@
+package com.yandex.taskManager.model;
+
 public class Task {
 
     private String name;
@@ -9,7 +11,6 @@ public class Task {
     public Task(String name, String description, Statuses status){
         this.name = name;
         this.description = description;
-        this.id = TaskManager.getNewTaskId();
         this.status = status;
     }
 
@@ -40,4 +41,7 @@ public class Task {
         this.status = status;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 }

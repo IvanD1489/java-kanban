@@ -1,6 +1,8 @@
+package com.yandex.taskManager.model;
+
 public class SubTask extends Task{
 
-    private int parentId;
+    private final int parentId;
 
     public SubTask(String name, String description, Statuses status, int parentId) {
         super(name, description, status);
@@ -12,17 +14,8 @@ public class SubTask extends Task{
         this.parentId = parentId;
     }
 
-    public void setParentId(int parentId){
-        this.parentId = parentId;
-    }
-
     public int getParentId(){
         return this.parentId;
     }
 
-    @Override
-    public void setStatus(Statuses status) {
-        super.setStatus(status);
-        TaskManager.recalculateEpicStatus(this.parentId);
-    }
 }
