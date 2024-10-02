@@ -1,6 +1,7 @@
 package com.yandex.taskManager;
 
 import com.yandex.taskManager.model.*;
+import com.yandex.taskManager.service.Managers;
 import com.yandex.taskManager.service.TaskManager;
 
 public class Main {
@@ -8,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         // 1. Создание задач
         //     1.1. Обычные задачи
@@ -84,5 +85,19 @@ public class Main {
         // 7. Получение подзадач по идентификатору эпика:
         System.out.println("Получение подзадач по идентификатору эпика:");
         System.out.println(taskManager.getEpicSubTasks(epic1.getId()));
+
+        // 8. Получение истории просмотра задач:
+        System.out.println("Получение истории просмотра:");
+        System.out.println(taskManager.getHistory());
+        // 9. Переполнение истории просмотра задач:
+        System.out.println("Переполнение списка задач:");
+        System.out.println("10 задач:");
+        for(int i = 0; i < 6; i++){
+            taskManager.getEpicById(epic1.getId());
+        }
+        System.out.println(taskManager.getHistory()); // --> 1, 2, 3, ..., 9, 10
+        System.out.println("11 задача:");
+        taskManager.getEpicById(epic2.getId());
+        System.out.println(taskManager.getHistory()); // --> 2, 3, 4, ..., 10, 11
     }
 }
