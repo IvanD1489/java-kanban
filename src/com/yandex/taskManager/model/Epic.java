@@ -1,10 +1,11 @@
 package com.yandex.taskManager.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task{
 
-    private final ArrayList<Integer> childrenIds = new ArrayList<>();
+    private final List<Integer> childrenIds = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description, Statuses.NEW);
@@ -28,7 +29,7 @@ public class Epic extends Task{
         childrenIds.clear();
     }
 
-    public ArrayList<Integer> getChildrenIds(){
+    public List<Integer> getChildrenIds(){
         return this.childrenIds;
     }
 

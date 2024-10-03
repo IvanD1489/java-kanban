@@ -4,14 +4,16 @@ import com.yandex.taskManager.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager{
 
     private int taskSequence = 1;
 
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final Map<Integer, Task> tasks = new HashMap<>();
+    private final Map<Integer, SubTask> subTasks = new HashMap<>();
+    private final Map<Integer, Epic> epics = new HashMap<>();
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -60,7 +62,7 @@ public class InMemoryTaskManager implements TaskManager{
     }
 
     @Override
-    public ArrayList<Task> getAllTasksByType(TaskTypes taskType) {
+    public List<Task> getAllTasksByType(TaskTypes taskType) {
         return switch (taskType) {
             case TASK -> new ArrayList<>(tasks.values());
             case SUBTASK -> new ArrayList<>(subTasks.values());
@@ -87,8 +89,8 @@ public class InMemoryTaskManager implements TaskManager{
     }
 
     @Override
-    public ArrayList<SubTask> getEpicSubTasks(int epicId){
-        ArrayList<SubTask> children = new ArrayList<>();
+    public List<SubTask> getEpicSubTasks(int epicId){
+        List<SubTask> children = new ArrayList<>();
         if(!epics.containsKey(epicId)){
             return children;
         }
@@ -143,7 +145,7 @@ public class InMemoryTaskManager implements TaskManager{
             recalculateEpicStatus(parentId);
         }
         else{
-            ArrayList<Integer> childrenIds = epics.get(id).getChildrenIds();
+            List<Integer> childrenIds = epics.get(id).getChildrenIds();
             for( int childId : childrenIds){
                 deleteTask(childId);
             }
@@ -152,13 +154,13 @@ public class InMemoryTaskManager implements TaskManager{
     }
 
     @Override
-    public ArrayList<Task> getHistory(){
+    public List<Task> getHistory(){
         return historyManager.getHistory();
     }
 
     private void recalculateEpicStatus(int epicId){
         Epic epic = epics.get(epicId);
-        ArrayList<Integer> epicChildren = epic.getChildrenIds();
+        List<Integer> epicChildren = epic.getChildrenIds();
         int childrenCount = epicChildren.size();
         if(childrenCount == 0){
             return;
