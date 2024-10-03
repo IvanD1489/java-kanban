@@ -1,10 +1,7 @@
-package test;
+package com.yandex.taskManager.service;
 
-import com.yandex.taskManager.model.Epic;
 import com.yandex.taskManager.model.Statuses;
 import com.yandex.taskManager.model.Task;
-import com.yandex.taskManager.service.Managers;
-import com.yandex.taskManager.service.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -44,4 +41,21 @@ class InMemoryHistoryManagerTest {
         // Проверка
         Assertions.assertEquals(history.size(), 1);
     }
+
+    @Test
+    void isNotOverflowing() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        taskManager.createTask(task1);
+
+        // Исполнение
+        for(int i = 0; i < 11; i++){
+            taskManager.getTaskById(task1.getId());
+        }
+
+        // Проверка
+        Assertions.assertEquals(taskManager.getHistory().size(), 10);
+    }
+
 }

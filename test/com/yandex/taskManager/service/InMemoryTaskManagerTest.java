@@ -1,8 +1,6 @@
-package test;
+package com.yandex.taskManager.service;
 
 import com.yandex.taskManager.model.*;
-import com.yandex.taskManager.service.Managers;
-import com.yandex.taskManager.service.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -75,5 +73,43 @@ class InMemoryTaskManagerTest {
 
         // Проверка
         Assertions.assertNull(taskManager.getTaskById(task1.getId()));
+    }
+
+    @Test
+    void isEpicStatusUpdatedToInProgress() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
+        taskManager.createEpic(epic1);
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        taskManager.createSubTask(subTask1);
+
+        // Исполнение
+        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.IN_PROGRESS, epic1.getId(), subTask1.getId());
+        taskManager.updateSubTask(subTask1);
+
+        // Проверка
+        Assertions.assertEquals(epic1.getStatus(), Statuses.IN_PROGRESS);
+    }
+
+    @Test
+    void isEpicStatusUpdatedToDone() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
+        taskManager.createEpic(epic1);
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        taskManager.createSubTask(subTask1);
+        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        taskManager.createSubTask(subTask2);
+
+        // Исполнение
+        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.DONE, epic1.getId(), subTask1.getId());
+        taskManager.updateSubTask(subTask1);
+        subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.DONE, epic1.getId(), subTask2.getId());
+        taskManager.updateSubTask(subTask2);
+
+        // Проверка
+        Assertions.assertEquals(epic1.getStatus(), Statuses.DONE);
     }
 }

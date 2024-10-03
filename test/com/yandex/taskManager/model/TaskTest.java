@@ -1,7 +1,5 @@
-package test;
+package com.yandex.taskManager.model;
 
-import com.yandex.taskManager.model.Statuses;
-import com.yandex.taskManager.model.Task;
 import com.yandex.taskManager.service.Managers;
 import com.yandex.taskManager.service.TaskManager;
 import org.junit.jupiter.api.Assertions;

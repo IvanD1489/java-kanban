@@ -1,6 +1,5 @@
-package test;
+package com.yandex.taskManager.model;
 
-import com.yandex.taskManager.model.Epic;
 import com.yandex.taskManager.service.Managers;
 import com.yandex.taskManager.service.TaskManager;
 import org.junit.jupiter.api.Test;
