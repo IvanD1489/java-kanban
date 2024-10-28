@@ -112,4 +112,21 @@ class InMemoryTaskManagerTest {
         // Проверка
         Assertions.assertEquals(epic1.getStatus(), Statuses.DONE);
     }
+
+    @Test
+    void isSubTaskDeletedFromEpicChildren() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
+        taskManager.createEpic(epic1);
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        taskManager.createSubTask(subTask1);
+        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        taskManager.createSubTask(subTask2);
+        // Исполнение
+        taskManager.deleteTask(subTask2.getId());
+
+        // Проверка
+        Assertions.assertEquals(epic1.getChildrenIds().size(), 1);
+    }
 }

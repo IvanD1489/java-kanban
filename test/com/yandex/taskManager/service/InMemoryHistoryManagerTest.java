@@ -43,19 +43,47 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void isNotOverflowing() {
+    void isReplacingAlreadyViewedTask() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
         Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
         taskManager.createTask(task1);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW);
+        taskManager.createTask(task2);
+        List<Task> checkHistory = new ArrayList<>();
+        checkHistory.add(task2);
+        checkHistory.add(task1);
 
         // Исполнение
-        for(int i = 0; i < 11; i++){
-            taskManager.getTaskById(task1.getId());
-        }
+        taskManager.getTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+        taskManager.getTaskById(task1.getId());
+
 
         // Проверка
-        Assertions.assertEquals(taskManager.getHistory().size(), 10);
+        Assertions.assertEquals(taskManager.getHistory(), checkHistory);
+    }
+
+    @Test
+    void isRemovedFromHistoryWhenDeleted() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        taskManager.createTask(task1);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW);
+        taskManager.createTask(task2);
+
+        taskManager.getTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+
+        List<Task> checkHistory = new ArrayList<>();
+        checkHistory.add(task2);
+
+        // Исполнение
+        taskManager.deleteTask(task1.getId());
+
+        // Проверка
+        Assertions.assertEquals(taskManager.getHistory(), checkHistory);
     }
 
 }

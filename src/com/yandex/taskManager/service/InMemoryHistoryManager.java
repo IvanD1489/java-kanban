@@ -3,25 +3,32 @@ package com.yandex.taskManager.service;
 import com.yandex.taskManager.model.Task;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager{
 
-    private final List<Task> history = new ArrayList<>();
-
-    private final static int MAX_HISTORY_SIZE = 10;
+    private final Map<Integer, Task> hashHistory = new LinkedHashMap<>();
 
     @Override
     public List<Task> getHistory(){
-        return List.copyOf(history);
+        return new ArrayList<Task>(hashHistory.values());
     }
 
     @Override
     public void addHistory(Task task){
-        history.add(task);
-        if(history.size() > MAX_HISTORY_SIZE){
-            history.removeFirst();
+        if(hashHistory.containsKey(task.getId())){
+            removeHistory(task.getId());
         }
+        hashHistory.put(task.getId(), task);
     }
+
+    @Override
+    public void removeHistory(int id){
+        hashHistory.remove(id);
+    }
+
+
 
 }
