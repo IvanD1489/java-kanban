@@ -1,5 +1,7 @@
 package com.yandex.taskManager.service;
 
+import com.yandex.taskManager.model.DiyLinkedHashMap;
+import com.yandex.taskManager.model.Node;
 import com.yandex.taskManager.model.Task;
 
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final Map<Integer, Task> hashHistory = new LinkedHashMap<>();
+    private final DiyLinkedHashMap hashHistory = new DiyLinkedHashMap();
 
     @Override
     public List<Task> getHistory() {
