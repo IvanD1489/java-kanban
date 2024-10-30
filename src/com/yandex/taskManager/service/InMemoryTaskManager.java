@@ -157,7 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.remove(id);
             recalculateEpicStatus(parentId);
         } else {
-            List<Integer> childrenIds = epics.get(id).getChildrenIds();
+            List<Integer> childrenIds = new ArrayList<>(epics.get(id).getChildrenIds());
             for (int childId : childrenIds) {
                 deleteTask(childId);
             }
