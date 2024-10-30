@@ -1,13 +1,10 @@
 package com.yandex.taskManager.service;
 
 import com.yandex.taskManager.model.DiyLinkedHashMap;
-import com.yandex.taskManager.model.Node;
 import com.yandex.taskManager.model.Task;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
