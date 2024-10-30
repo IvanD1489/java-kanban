@@ -11,7 +11,7 @@ public class DiyLinkedHashMap {
     public Node tail;
     private final Map<Integer, Node> taskNodes = new HashMap<>();
 
-    public void put(Integer index, Task data){
+    public void put(Integer index, Task data) {
         Node newNode = new Node(data);
         if (head == null) {
             head = newNode;
@@ -25,26 +25,26 @@ public class DiyLinkedHashMap {
         taskNodes.put(index, newNode);
     }
 
-    public boolean containsKey(Integer key){
+    public boolean containsKey(Integer key) {
         return taskNodes.containsKey(key);
     }
 
-    public void remove(Integer id){
+    public void remove(Integer id) {
         Node node = taskNodes.get(id);
         if (node != null) {
             // Если элемент который удаляем - единственный в цепочке
             if (head == tail && head == node) {
                 head = null;
                 tail = null;
-            // Если удаляем головной элемент
+                // Если удаляем головной элемент
             } else if (node == head) {
                 head = head.next;
                 head.prev = null;
-            // Если удаляем хвостовой элемент
+                // Если удаляем хвостовой элемент
             } else if (node == tail) {
                 tail = tail.prev;
                 tail.next = null;
-            // Во всех других случаях
+                // Во всех других случаях
             } else {
                 node.prev.next = node.next;
                 node.next.prev = node.prev;
@@ -53,7 +53,7 @@ public class DiyLinkedHashMap {
         }
     }
 
-    public List<Task> values(){
+    public List<Task> values() {
         List<Task> history = new ArrayList<>();
         Node iterNode = head;
         while (iterNode != null) {
