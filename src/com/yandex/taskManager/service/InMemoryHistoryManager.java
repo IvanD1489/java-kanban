@@ -12,14 +12,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        return new ArrayList<Task>(hashHistory.values());
+        return hashHistory.values();
     }
 
     @Override
     public void addHistory(Task task) {
-        if (hashHistory.containsKey(task.getId())) {
-            removeHistory(task.getId());
-        }
+        removeHistory(task.getId());
         hashHistory.put(task.getId(), task);
     }
 

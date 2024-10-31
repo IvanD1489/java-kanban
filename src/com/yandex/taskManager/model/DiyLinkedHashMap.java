@@ -12,15 +12,14 @@ public class DiyLinkedHashMap {
     private final Map<Integer, Node> taskNodes = new HashMap<>();
 
     public void put(Integer index, Task data) {
-        Node newNode = new Node(data);
+        Node newNode = new Node(data, null, null);
         if (head == null) {
             head = newNode;
-            tail = newNode;
         } else {
-            tail.next = newNode;
-            newNode.prev = tail;
-            tail = newNode;
+            tail.setNext(newNode);
+            newNode.setPrev(tail);
         }
+        tail = newNode;
 
         taskNodes.put(index, newNode);
     }
@@ -38,16 +37,16 @@ public class DiyLinkedHashMap {
                 tail = null;
                 // Если удаляем головной элемент
             } else if (node == head) {
-                head = head.next;
-                head.prev = null;
+                head = head.getNext();
+                head.setPrev(null);
                 // Если удаляем хвостовой элемент
             } else if (node == tail) {
-                tail = tail.prev;
-                tail.next = null;
+                tail = tail.getPrev();
+                tail.setNext(null);
                 // Во всех других случаях
             } else {
-                node.prev.next = node.next;
-                node.next.prev = node.prev;
+                node.getPrev().setNext(node.getNext());
+                node.getNext().setPrev(node.getPrev());
             }
             taskNodes.remove(id);
         }
@@ -57,8 +56,8 @@ public class DiyLinkedHashMap {
         List<Task> history = new ArrayList<>();
         Node iterNode = head;
         while (iterNode != null) {
-            history.add(iterNode.data);
-            iterNode = iterNode.next;
+            history.add(iterNode.getData());
+            iterNode = iterNode.getNext();
         }
 
         return history;
