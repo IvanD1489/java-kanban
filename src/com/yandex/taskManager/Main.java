@@ -89,15 +89,16 @@ public class Main {
         // 8. Получение истории просмотра задач:
         System.out.println("Получение истории просмотра:");
         System.out.println(taskManager.getHistory());
-        // 9. Переполнение истории просмотра задач:
-        System.out.println("Переполнение списка задач:");
-        System.out.println("10 задач:");
-        for(int i = 0; i < 6; i++){
-            taskManager.getEpicById(epic1.getId());
-        }
-        System.out.println(taskManager.getHistory()); // --> 1, 2, 3, ..., 9, 10
-        System.out.println("11 задача:");
-        taskManager.getEpicById(epic2.getId());
-        System.out.println(taskManager.getHistory()); // --> 2, 3, 4, ..., 10, 11
+        taskManager.getEpicById(epic1.getId());
+        taskManager.getTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+        taskManager.getSubTaskById(subTask11.getId());
+        taskManager.getSubTaskById(subTask21.getId());
+        System.out.println(taskManager.getHistory());
+
+        System.out.println("Просмотр уже просмотренных задач");
+        taskManager.getTaskById(task1.getId());
+        taskManager.getEpicById(epic1.getId());
+        System.out.println(taskManager.getHistory());
     }
 }

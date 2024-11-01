@@ -1,6 +1,6 @@
 package com.yandex.taskManager.model;
 
-public class SubTask extends Task{
+public class SubTask extends Task {
 
     private final int parentId;
 
@@ -14,7 +14,7 @@ public class SubTask extends Task{
         this.parentId = parentId;
     }
 
-    public int getParentId(){
+    public int getParentId() {
         return this.parentId;
     }
 
