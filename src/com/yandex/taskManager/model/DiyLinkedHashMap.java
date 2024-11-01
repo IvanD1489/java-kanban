@@ -53,7 +53,7 @@ public class DiyLinkedHashMap {
     }
 
     public List<Task> values() {
-        List<Task> history = new ArrayList<>();
+        List<Task> history = new ArrayList<>(taskNodes.size());
         Node iterNode = head;
         while (iterNode != null) {
             history.add(iterNode.getData());
