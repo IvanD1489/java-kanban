@@ -33,4 +33,9 @@ public class Epic extends Task {
         return this.childrenIds;
     }
 
+    @Override
+    public String toString() {
+        return super.getId() + "," + "EPIC," + super.getName() + "," + super.getStatus() + "," + super.getDescription() + ",";
+    }
+
 }

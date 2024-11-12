@@ -172,7 +172,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    private void recalculateEpicStatus(int epicId) {
+    protected void recalculateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         List<Integer> epicChildren = epic.getChildrenIds();
         int childrenCount = epicChildren.size();
