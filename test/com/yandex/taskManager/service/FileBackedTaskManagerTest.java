@@ -6,10 +6,7 @@ import com.yandex.taskManager.model.TaskTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,6 +90,8 @@ class FileBackedTaskManagerTest {
     @Test
     void isFileDataCreated() throws IOException {
         // Подготовка
+        Writer fileWriter = new FileWriter("filewriter.txt");
+        fileWriter.close();
         TaskManager taskManager = Managers.getFileBackedTaskManager();
         Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
         taskManager.createTask(task1);

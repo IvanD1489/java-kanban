@@ -112,7 +112,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         final List<Task> subTasks = super.getAllTasksByType(TaskTypes.SUBTASK);
         final List<Task> epics = super.getAllTasksByType(TaskTypes.EPIC);
 
-        try (Writer fileWriter = new FileWriter(FILE_DATA_PATH, false)) {
+        try (Writer fileWriter = new FileWriter(FILE_DATA_PATH)) {
             fileWriter.append("id,type,name,status,description,epic\n");
 
             for (Task task : tasks) {
