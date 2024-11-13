@@ -7,7 +7,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private final static String FILE_DATA_PATH = "filewriter.txt";
+    private static final String FILE_DATA_PATH = "filewriter.txt";
 
     public FileBackedTaskManager() {
         File dir = new File(FILE_DATA_PATH);
