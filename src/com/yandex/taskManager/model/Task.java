@@ -37,6 +37,10 @@ public class Task {
         return this.status;
     }
 
+    public TaskTypes getType() {
+        return TaskTypes.TASK;
+    }
+
     public void setStatus(Statuses status) {
         this.status = status;
     }
