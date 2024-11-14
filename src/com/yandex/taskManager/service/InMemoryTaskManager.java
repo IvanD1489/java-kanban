@@ -172,14 +172,12 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    public void addToMap(Task task){
-        if(task.getType() == TaskTypes.TASK){
+    public void addToMap(Task task) {
+        if (task.getType() == TaskTypes.TASK) {
             tasks.put(task.getId(), task);
-        }
-        else if(task.getType() == TaskTypes.SUBTASK){
+        } else if (task.getType() == TaskTypes.SUBTASK) {
             subTasks.put(task.getId(), (SubTask) task);
-        }
-        else{
+        } else {
             epics.put(task.getId(), (Epic) task);
         }
     }
