@@ -1,5 +1,6 @@
 package com.yandex.taskManager.service;
 
+import com.yandex.taskManager.exceptions.ManagerSaveException;
 import com.yandex.taskManager.model.*;
 
 import java.io.*;
@@ -7,10 +8,13 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private static final String FILE_DATA_PATH = "filewriter.txt";
+    private final String dataPath;
 
-    public FileBackedTaskManager() {
-        File dir = new File(FILE_DATA_PATH);
+    private static final String FILE_HEADER = "id,type,name,status,description,epic\n";
+
+    public FileBackedTaskManager(String dataPath) {
+        this.dataPath = dataPath;
+        File dir = new File(this.dataPath);
         loadFromFile(dir);
     }
 
@@ -78,12 +82,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-
-    protected void recalculateEpicStatus(int epicId) {
-        super.recalculateEpicStatus(epicId);
-        save();
-    }
-
     private void loadFromFile(File file) throws ManagerSaveException {
         try (FileReader reader = new FileReader(file.getPath())) {
             BufferedReader br = new BufferedReader(reader);
@@ -94,13 +92,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             while (br.ready()) {
                 String line = br.readLine();
                 Task newTask = fromString(line);
-                if (newTask.getType() == TaskTypes.TASK) {
-                    createTask(newTask);
-                } else if (newTask.getType() == TaskTypes.SUBTASK) {
-                    createSubTask((SubTask) newTask);
-                } else if (newTask.getType() == TaskTypes.EPIC) {
-                    createEpic((Epic) newTask);
-                }
+                addToMap(newTask);
             }
         } catch (IOException e) {
             throw new ManagerSaveException(e.getMessage());
@@ -112,8 +104,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         final List<Task> subTasks = super.getAllTasksByType(TaskTypes.SUBTASK);
         final List<Task> epics = super.getAllTasksByType(TaskTypes.EPIC);
 
-        try (Writer fileWriter = new FileWriter(FILE_DATA_PATH)) {
-            fileWriter.append("id,type,name,status,description,epic\n");
+        try (Writer fileWriter = new FileWriter(this.dataPath)) {
+            fileWriter.append(FILE_HEADER);
 
             for (Task task : tasks) {
                 fileWriter.append(task.toString()).append("\n");

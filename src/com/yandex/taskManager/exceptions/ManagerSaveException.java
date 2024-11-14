@@ -1,4 +1,4 @@
-package com.yandex.taskManager.model;
+package com.yandex.taskManager.exceptions;
 
 public class ManagerSaveException extends RuntimeException {
 

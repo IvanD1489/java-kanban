@@ -2,6 +2,7 @@ package com.yandex.taskManager.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
 
@@ -43,4 +44,17 @@ public class Epic extends Task {
         return super.getId() + "," + "EPIC," + super.getName() + "," + super.getStatus() + "," + super.getDescription() + ",";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(childrenIds, epic.childrenIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), childrenIds);
+    }
 }

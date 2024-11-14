@@ -172,6 +172,18 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    public void addToMap(Task task){
+        if(task.getType() == TaskTypes.TASK){
+            tasks.put(task.getId(), task);
+        }
+        else if(task.getType() == TaskTypes.SUBTASK){
+            subTasks.put(task.getId(), (SubTask) task);
+        }
+        else{
+            epics.put(task.getId(), (Epic) task);
+        }
+    }
+
     protected void recalculateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         List<Integer> epicChildren = epic.getChildrenIds();
