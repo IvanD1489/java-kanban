@@ -19,6 +19,9 @@ public class Main {
         System.out.println(taskManager.getAllTasksByType(TaskTypes.EPIC));
         System.out.println();
 
+        SubTask newTask = new SubTask("Подзадача 3", "Обычная подзадача", Statuses.IN_PROGRESS, 4, 8);
+        taskManager.updateSubTask(newTask);
+
         // 3. Получение истории просмотра задач:
         System.out.println(taskManager.getHistory());
     }

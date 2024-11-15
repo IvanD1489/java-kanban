@@ -172,13 +172,18 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    public void addToMap(Task task) {
+    protected void addToMap(Task task) {
         if (task.getType() == TaskTypes.TASK) {
             tasks.put(task.getId(), task);
         } else if (task.getType() == TaskTypes.SUBTASK) {
-            subTasks.put(task.getId(), (SubTask) task);
+            final SubTask subTask = (SubTask) task;
+            subTasks.put(task.getId(), subTask);
+            epics.get(subTask.getParentId()).addChild(task.getId());
         } else {
             epics.put(task.getId(), (Epic) task);
+        }
+        if (task.getId() >= taskSequence) {
+            taskSequence = task.getId() + 1;
         }
     }
 

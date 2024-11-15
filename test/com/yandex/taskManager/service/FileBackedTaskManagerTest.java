@@ -104,7 +104,6 @@ class FileBackedTaskManagerTest {
         String firstTaskStringify = task1.toString();
         br.close();
 
-
         // Проверка
         Assertions.assertEquals(firstTask, firstTaskStringify);
     }
