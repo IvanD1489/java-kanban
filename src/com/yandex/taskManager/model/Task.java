@@ -1,5 +1,7 @@
 package com.yandex.taskManager.model;
 
+import java.util.Objects;
+
 public class Task {
 
     private String name;
@@ -37,6 +39,10 @@ public class Task {
         return this.status;
     }
 
+    public TaskTypes getType() {
+        return TaskTypes.TASK;
+    }
+
     public void setStatus(Statuses status) {
         this.status = status;
     }
@@ -51,5 +57,23 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return id + "," + "TASK," + name + "," + status + "," + description + ",";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, id, status);
     }
 }
