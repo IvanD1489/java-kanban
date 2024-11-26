@@ -4,6 +4,7 @@ import com.yandex.taskManager.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 class InMemoryTaskManagerTest {
@@ -27,7 +28,7 @@ class InMemoryTaskManagerTest {
         TaskManager taskManager = Managers.getDefault();
         Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
         taskManager.createEpic(epic1);
-        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
 
         // Исполнение
         taskManager.createSubTask(subTask1);
@@ -40,7 +41,7 @@ class InMemoryTaskManagerTest {
     void isTaskCreated() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
 
         // Исполнение
         taskManager.createTask(task1);
@@ -52,8 +53,8 @@ class InMemoryTaskManagerTest {
     @Test
     void isTasksDeletedByType() {
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
-        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         // Исполнение
@@ -66,7 +67,7 @@ class InMemoryTaskManagerTest {
     @Test
     void isTaskDeletedById() {
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task1);
         // Исполнение
         taskManager.deleteTask(task1.getId());
@@ -81,11 +82,11 @@ class InMemoryTaskManagerTest {
         TaskManager taskManager = Managers.getDefault();
         Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
         taskManager.createEpic(epic1);
-        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
         taskManager.createSubTask(subTask1);
 
         // Исполнение
-        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.IN_PROGRESS, epic1.getId(), subTask1.getId());
+        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.IN_PROGRESS, epic1.getId(), 60, LocalDateTime.now(), subTask1.getId());
         taskManager.updateSubTask(subTask1);
 
         // Проверка
@@ -98,15 +99,15 @@ class InMemoryTaskManagerTest {
         TaskManager taskManager = Managers.getDefault();
         Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
         taskManager.createEpic(epic1);
-        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
         taskManager.createSubTask(subTask1);
-        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
         taskManager.createSubTask(subTask2);
 
         // Исполнение
-        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.DONE, epic1.getId(), subTask1.getId());
+        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.DONE, epic1.getId(), 60, LocalDateTime.now(), subTask1.getId());
         taskManager.updateSubTask(subTask1);
-        subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.DONE, epic1.getId(), subTask2.getId());
+        subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.DONE, epic1.getId(), 60, LocalDateTime.now(), subTask2.getId());
         taskManager.updateSubTask(subTask2);
 
         // Проверка
@@ -119,14 +120,66 @@ class InMemoryTaskManagerTest {
         TaskManager taskManager = Managers.getDefault();
         Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
         taskManager.createEpic(epic1);
-        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
         taskManager.createSubTask(subTask1);
-        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId());
+        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
         taskManager.createSubTask(subTask2);
         // Исполнение
         taskManager.deleteTask(subTask2.getId());
 
         // Проверка
         Assertions.assertEquals(epic1.getChildrenIds().size(), 1);
+    }
+
+    @Test
+    void isEpicStartTimeCalculated() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
+        taskManager.createEpic(epic1);
+        LocalDateTime now = LocalDateTime.now();
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, now);
+
+        // Исполнение
+        taskManager.createSubTask(subTask1);
+
+        // Проверка
+        Assertions.assertEquals(epic1.getStartTime(), now);
+    }
+
+    @Test
+    void isEpicEndTimeCalculated() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
+        taskManager.createEpic(epic1);
+        LocalDateTime now = LocalDateTime.now();
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, now);
+        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId(), 30, now.plusMinutes(90));
+
+        // Исполнение
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
+
+        // Проверка
+        Assertions.assertEquals(epic1.getEndTime(), now.plusMinutes(120));
+    }
+
+    @Test
+    void isEpicDurationCalculated() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
+        taskManager.createEpic(epic1);
+        LocalDateTime now = LocalDateTime.now();
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, now);
+        SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId(), 30, now.plusMinutes(90));
+
+        // Исполнение
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
+
+        // Проверка
+        Assertions.assertEquals(epic1.getDuration(), 90);
     }
 }

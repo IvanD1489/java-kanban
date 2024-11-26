@@ -1,18 +1,19 @@
 package com.yandex.taskManager.model;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SubTask extends Task {
 
     private final int parentId;
 
-    public SubTask(String name, String description, Statuses status, int parentId) {
-        super(name, description, status);
+    public SubTask(String name, String description, Statuses status, int parentId, int duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
         this.parentId = parentId;
     }
 
-    public SubTask(String name, String description, Statuses status, int parentId, int id) {
-        super(name, description, status, id);
+    public SubTask(String name, String description, Statuses status, int parentId, long duration, LocalDateTime startTime, int id) {
+        super(name, description, status, duration, startTime, id);
         this.parentId = parentId;
     }
 
@@ -27,7 +28,8 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return super.getId() + "," + "SUBTASK," + super.getName() + "," + super.getStatus() + "," + super.getDescription() + "," + parentId;
+        return super.getId() + "," + "SUBTASK," + super.getName() + "," + super.getStatus() + "," +
+                super.getDescription() + "," + duration.toMinutes() + "," + startTime + "," + parentId;
     }
 
     @Override

@@ -2,10 +2,9 @@ package com.yandex.taskManager.service;
 
 import com.yandex.taskManager.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -33,7 +32,7 @@ public class InMemoryTaskManager implements TaskManager {
         subTask.setId(getNewTaskId());
         subTasks.put(subTask.getId(), subTask);
         epic.addChild(subTask.getId());
-        recalculateEpicStatus(epicId);
+        recalculateEpicData(epicId);
     }
 
     @Override
@@ -51,7 +50,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubTask(SubTask subTask) {
         subTasks.put(subTask.getId(), subTask);
         int epicId = subTask.getParentId();
-        recalculateEpicStatus(epicId);
+        recalculateEpicData(epicId);
     }
 
     @Override
@@ -86,7 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
                 subTasks.clear();
                 for (Epic epic : epics.values()) {
                     epic.clearChildren();
-                    recalculateEpicStatus(epic.getId());
+                    recalculateEpicData(epic.getId());
                 }
             }
             case EPIC -> {
@@ -155,7 +154,7 @@ public class InMemoryTaskManager implements TaskManager {
             int parentId = subTasks.get(id).getParentId();
             epics.get(parentId).removeChild(id);
             subTasks.remove(id);
-            recalculateEpicStatus(parentId);
+            recalculateEpicData(parentId);
         } else {
             List<Integer> childrenIds = new ArrayList<>(epics.get(id).getChildrenIds());
             for (int childId : childrenIds) {
@@ -170,6 +169,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks(){
+        Set<Task> set = new TreeSet<>(new Comparator<Task>() {
+            @Override
+            public int compare(Task s1, Task s2) {
+                return s1.getStartTime().compareTo(s2.getStartTime());
+            }
+        });
+
+        set.addAll(tasks.values());
+        set.addAll(subTasks.values());
+
+        return new ArrayList<>(set);
     }
 
     protected void addToMap(Task task) {
@@ -214,6 +228,61 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Statuses.IN_PROGRESS);
         }
 
+    }
+
+    protected void recalculateEpicDuration(int epicId){
+        Epic epic = epics.get(epicId);
+        List<Integer> epicChildren = epic.getChildrenIds();
+        int childrenCount = epicChildren.size();
+        if (childrenCount == 0) {
+            epic.setDuration(0);
+            return;
+        }
+        long totalDuration = 0;
+        for (int childId : epicChildren) {
+            SubTask child = subTasks.get(childId);
+            totalDuration += child.getDuration();
+        }
+        epic.setDuration(totalDuration);
+    }
+
+    protected void recalculateEpicTime(int epicId){
+        Epic epic = epics.get(epicId);
+        List<Integer> epicChildren = epic.getChildrenIds();
+        int childrenCount = epicChildren.size();
+        if (childrenCount == 0) {
+            return;
+        }
+        LocalDateTime minTime = List.copyOf(epicChildren)
+                .stream()
+                .min((t1, t2) -> {
+                    Task task1 = getSubTaskById(t1);
+                    Task task2 = getSubTaskById(t2);
+                    return task1.getStartTime().compareTo(task2.getStartTime());
+                })
+                .map(t -> getSubTaskById(t).getStartTime())
+                .orElse(null);
+        LocalDateTime maxTime = List.copyOf(epicChildren)
+                .stream()
+                .max((t1, t2) -> {
+                    SubTask task1 = getSubTaskById(t1);
+                    SubTask task2 = getSubTaskById(t2);
+                    return task1.getEndTime().compareTo(task2.getEndTime());
+                })
+                .map(t -> getSubTaskById(t).getEndTime())
+                .orElse(null);
+        if(minTime != null){
+            epic.setStartTime(minTime);
+        }
+        if(maxTime != null){
+            epic.setEndTime(maxTime);
+        }
+    }
+
+    protected void recalculateEpicData(int epicId){
+        recalculateEpicStatus(epicId);
+        recalculateEpicDuration(epicId);
+        recalculateEpicTime(epicId);
     }
 
     private int getNewTaskId() {
