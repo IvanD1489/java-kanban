@@ -2,7 +2,6 @@ package com.yandex.taskManager.service;
 
 import com.yandex.taskManager.model.Statuses;
 import com.yandex.taskManager.model.Task;
-import com.yandex.taskManager.model.TaskTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
