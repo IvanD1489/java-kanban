@@ -111,15 +111,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (Writer fileWriter = new FileWriter(this.dataPath)) {
             fileWriter.append(FILE_HEADER);
 
-            for (Task task : tasks) {
-                fileWriter.append(task.toString()).append("\n");
-            }
-            for (Task task : epics) {
-                fileWriter.append(task.toString()).append("\n");
-            }
-            for (Task task : subTasks) {
-                fileWriter.append(task.toString()).append("\n");
-            }
+            tasks.forEach(task -> {
+                try {
+                    fileWriter.append(task.toString()).append("\n");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            epics.forEach(task -> {
+                try {
+                    fileWriter.append(task.toString()).append("\n");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            subTasks.forEach(task -> {
+                try {
+                    fileWriter.append(task.toString()).append("\n");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } catch (IOException e) {
             throw new ManagerSaveException(e.getMessage());
         }

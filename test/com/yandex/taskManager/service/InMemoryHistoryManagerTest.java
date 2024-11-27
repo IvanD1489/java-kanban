@@ -2,6 +2,7 @@ package com.yandex.taskManager.service;
 
 import com.yandex.taskManager.model.Statuses;
 import com.yandex.taskManager.model.Task;
+import com.yandex.taskManager.model.TaskTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +48,7 @@ class InMemoryHistoryManagerTest {
     void isReplacingAlreadyViewedTask() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusYears(1));
         taskManager.createTask(task1);
         Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task2);
@@ -69,7 +70,7 @@ class InMemoryHistoryManagerTest {
     void isRemovedFromHistoryWhenDeleted() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusYears(1));
         taskManager.createTask(task1);
         Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task2);

@@ -99,13 +99,13 @@ class InMemoryTaskManagerTest {
         TaskManager taskManager = Managers.getDefault();
         Epic epic1 = new Epic("Эпик 1", "Обычный эпик");
         taskManager.createEpic(epic1);
-        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
+        SubTask subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now().plusYears(1));
         taskManager.createSubTask(subTask1);
         SubTask subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.NEW, epic1.getId(), 60, LocalDateTime.now());
         taskManager.createSubTask(subTask2);
 
         // Исполнение
-        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.DONE, epic1.getId(), 60, LocalDateTime.now(), subTask1.getId());
+        subTask1 = new SubTask("Подзадача 1", "Обычная подзадача", Statuses.DONE, epic1.getId(), 60, LocalDateTime.now().plusYears(1), subTask1.getId());
         taskManager.updateSubTask(subTask1);
         subTask2 = new SubTask("Подзадача 2", "Обычная подзадача", Statuses.DONE, epic1.getId(), 60, LocalDateTime.now(), subTask2.getId());
         taskManager.updateSubTask(subTask2);
@@ -181,5 +181,19 @@ class InMemoryTaskManagerTest {
 
         // Проверка
         Assertions.assertEquals(epic1.getDuration(), 90);
+    }
+
+    @Test
+    void isTasksNonIntercepted() {
+        TaskManager taskManager = Managers.getDefault();
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().minusMinutes(30));
+
+        // Исполнение
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+
+        // Проверка
+        Assertions.assertNull(taskManager.getTaskById(task2.getId()));
     }
 }
