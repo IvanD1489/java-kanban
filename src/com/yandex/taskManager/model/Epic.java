@@ -23,7 +23,7 @@ public class Epic extends Task {
     }
 
     @Override
-    public LocalDateTime getEndTime(){
+    public LocalDateTime getEndTime() {
         return this.endTime;
     }
 
