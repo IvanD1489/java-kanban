@@ -15,23 +15,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
+    private final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+
     @Override
     public void createTask(Task task) {
-        if (checkTaskIntersection(task)) {
+        prioritizedTasks.add(task);
+        if (checkTaskIntersection()) {
+            prioritizedTasks.remove(task);
             return;
         }
+
         task.setId(getNewTaskId());
         tasks.put(task.getId(), task);
     }
 
     @Override
     public void createSubTask(SubTask subTask) {
-        if (checkTaskIntersection(subTask)) {
-            return;
-        }
         int epicId = subTask.getParentId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
+            return;
+        }
+        prioritizedTasks.add(subTask);
+        if (checkTaskIntersection()) {
+            prioritizedTasks.remove(subTask);
             return;
         }
         subTask.setId(getNewTaskId());
@@ -42,20 +49,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createEpic(Epic epic) {
-        if (checkTaskIntersection(epic)) {
-            return;
-        }
         epic.setId(getNewTaskId());
         epics.put(epic.getId(), epic);
     }
 
     @Override
     public void updateTask(Task task) {
+        if (checkTaskIntersectionForUpdate(task)) {
+            return;
+        }
         tasks.put(task.getId(), task);
     }
 
     @Override
     public void updateSubTask(SubTask subTask) {
+        if (checkTaskIntersectionForUpdate(subTask)) {
+            return;
+        }
         subTasks.put(subTask.getId(), subTask);
         int epicId = subTask.getParentId();
         recalculateEpicData(epicId);
@@ -173,19 +183,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Set<Task> getPrioritizedTasks() {
-        Set<Task> set = new TreeSet<>(Comparator.comparing(Task::getStartTime));
-
-        set.addAll(tasks.values());
-        set.addAll(subTasks.values());
-
-        return set;
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     @Override
-    public boolean checkTaskIntersection(Task newTask) {
-        Set<Task> set = getPrioritizedTasks();
-        set.add(newTask);
+    public boolean checkTaskIntersection() {
+        Set<Task> set = this.prioritizedTasks;
 
         return set.stream().anyMatch(task1 ->
                 set.stream().anyMatch(task2 ->
@@ -193,6 +197,23 @@ public class InMemoryTaskManager implements TaskManager {
                                 (task1.getStartTime().isBefore(task2.getEndTime()) && task2.getStartTime().isBefore(task1.getEndTime()))
                 )
         );
+    }
+
+    @Override
+    public boolean checkTaskIntersectionForUpdate(Task task) {
+        Task oldTask = getTaskById(task.getId());
+        if (oldTask == null) {
+            oldTask = getSubTaskById(task.getId());
+        }
+        prioritizedTasks.remove(oldTask);
+        prioritizedTasks.add(task);
+        if (checkTaskIntersection()) {
+            prioritizedTasks.remove(task);
+            prioritizedTasks.add(oldTask);
+            return true;
+        }
+
+        return false;
     }
 
     protected void addToMap(Task task) {
@@ -213,8 +234,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected void recalculateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         List<Integer> epicChildren = epic.getChildrenIds();
-        int childrenCount = epicChildren.size();
-        if (childrenCount == 0) {
+        if (epicChildren.isEmpty()) {
             return;
         }
         boolean allDone = epicChildren.stream()
@@ -237,8 +257,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected void recalculateEpicDuration(int epicId) {
         Epic epic = epics.get(epicId);
         List<Integer> epicChildren = epic.getChildrenIds();
-        int childrenCount = epicChildren.size();
-        if (childrenCount == 0) {
+        if (epicChildren.isEmpty()) {
             epic.setDuration(0);
             return;
         }
@@ -252,34 +271,21 @@ public class InMemoryTaskManager implements TaskManager {
     protected void recalculateEpicTime(int epicId) {
         Epic epic = epics.get(epicId);
         List<Integer> epicChildren = epic.getChildrenIds();
-        int childrenCount = epicChildren.size();
-        if (childrenCount == 0) {
+        if (epicChildren.isEmpty()) {
             return;
         }
-        LocalDateTime minTime = List.copyOf(epicChildren)
+        Optional<LocalDateTime> minTime = epicChildren
                 .stream()
-                .min((t1, t2) -> {
-                    Task task1 = getSubTaskById(t1);
-                    Task task2 = getSubTaskById(t2);
-                    return task1.getStartTime().compareTo(task2.getStartTime());
-                })
-                .map(t -> getSubTaskById(t).getStartTime())
-                .orElse(null);
-        LocalDateTime maxTime = List.copyOf(epicChildren)
+                .map(this::getSubTaskById)
+                .min(Comparator.comparing(Task::getStartTime))
+                .map(Task::getStartTime);
+        Optional<LocalDateTime> maxTime = epicChildren
                 .stream()
-                .max((t1, t2) -> {
-                    SubTask task1 = getSubTaskById(t1);
-                    SubTask task2 = getSubTaskById(t2);
-                    return task1.getEndTime().compareTo(task2.getEndTime());
-                })
-                .map(t -> getSubTaskById(t).getEndTime())
-                .orElse(null);
-        if (minTime != null) {
-            epic.setStartTime(minTime);
-        }
-        if (maxTime != null) {
-            epic.setEndTime(maxTime);
-        }
+                .map(this::getSubTaskById)
+                .max(Comparator.comparing(Task::getEndTime))
+                .map(Task::getEndTime);
+        minTime.ifPresent(epic::setStartTime);
+        maxTime.ifPresent(epic::setEndTime);
     }
 
     protected void recalculateEpicData(int epicId) {

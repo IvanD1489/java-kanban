@@ -1,2 +1,2 @@
 id,type,name,status,description,duration,start,epic
-8,TASK,Задача 1,NEW,Обычная задача,60,2024-11-27T23:40:14.724328800,
+9,TASK,Задача 1,NEW,Обычная задача,60,2024-11-29T14:46:42.607737100,

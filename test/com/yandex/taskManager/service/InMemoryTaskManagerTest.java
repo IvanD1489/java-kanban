@@ -185,6 +185,22 @@ class InMemoryTaskManagerTest {
 
     @Test
     void isTasksNonIntercepted() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().minusMinutes(90));
+
+        // Исполнение
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+
+        // Проверка
+        Assertions.assertNotNull(taskManager.getTaskById(task2.getId()));
+    }
+
+    @Test
+    void isTasksIntercepted() {
+        // Подготовка
         TaskManager taskManager = Managers.getDefault();
         Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().minusMinutes(30));
@@ -195,5 +211,68 @@ class InMemoryTaskManagerTest {
 
         // Проверка
         Assertions.assertNull(taskManager.getTaskById(task2.getId()));
+    }
+
+    @Test
+    void isTasksNonInterceptedByBorders() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+
+        // Исполнение
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        taskManager.createTask(task1);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusMinutes(60));
+        taskManager.createTask(task2);
+
+        // Проверка
+        Assertions.assertNotNull(taskManager.getTaskById(task2.getId()));
+    }
+
+    @Test
+    void isTasksInterceptedByBorders() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        ;
+
+        // Исполнение
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        taskManager.createTask(task1);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusMinutes(60).minusSeconds(1));
+        taskManager.createTask(task2);
+
+        // Проверка
+        Assertions.assertNull(taskManager.getTaskById(task2.getId()));
+    }
+
+    @Test
+    void isTasksNonInterceptedByUpdate() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        taskManager.createTask(task1);
+        task1 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().minusMinutes(30), task1.getId());
+
+        // Исполнение
+        taskManager.updateTask(task1);
+
+        // Проверка
+        Assertions.assertEquals(taskManager.getTaskById(task1.getId()).getName(), "Задача 2");
+    }
+
+    @Test
+    void isTasksInterceptedByUpdate() {
+        // Подготовка
+        TaskManager taskManager = Managers.getDefault();
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
+        taskManager.createTask(task1);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusMinutes(90));
+        taskManager.createTask(task2);
+        task2 = new Task("Задача 2", "Очень обычная задача", Statuses.NEW, 60, LocalDateTime.now().minusMinutes(30), task2.getId());
+
+        // Исполнение
+        taskManager.updateTask(task2);
+
+        // Проверка
+        Assertions.assertEquals(taskManager.getTaskById(task2.getId()).getDescription(), "Обычная задача");
     }
 }
