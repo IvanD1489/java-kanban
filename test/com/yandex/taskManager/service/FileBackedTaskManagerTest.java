@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,8 @@ class FileBackedTaskManagerTest {
     void isHistoryStored() {
         // Подготовка
         TaskManager taskManager = Managers.getFileBackedTaskManager("filewriter.txt");
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        taskManager.deleteTasks(TaskTypes.TASK);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task1);
         taskManager.getTaskById(task1.getId());
         List<Task> checkHistory = new ArrayList<>();
@@ -33,7 +35,8 @@ class FileBackedTaskManagerTest {
     void isHistoryAdded() {
         // Подготовка
         TaskManager taskManager = Managers.getFileBackedTaskManager("filewriter.txt");
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        taskManager.deleteTasks(TaskTypes.TASK);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task1);
         taskManager.getTaskById(task1.getId());
 
@@ -48,9 +51,10 @@ class FileBackedTaskManagerTest {
     void isReplacingAlreadyViewedTask() {
         // Подготовка
         TaskManager taskManager = Managers.getFileBackedTaskManager("filewriter.txt");
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        taskManager.deleteTasks(TaskTypes.TASK);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusYears(1));
         taskManager.createTask(task1);
-        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task2);
         List<Task> checkHistory = new ArrayList<>();
         checkHistory.add(task2);
@@ -69,9 +73,10 @@ class FileBackedTaskManagerTest {
     void isRemovedFromHistoryWhenDeleted() {
         // Подготовка
         TaskManager taskManager = Managers.getFileBackedTaskManager("filewriter.txt");
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        taskManager.deleteTasks(TaskTypes.TASK);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusYears(1));
         taskManager.createTask(task1);
-        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task2);
 
         taskManager.getTaskById(task1.getId());
@@ -93,7 +98,7 @@ class FileBackedTaskManagerTest {
         Writer fileWriter = new FileWriter("filewriter.txt");
         fileWriter.close();
         TaskManager taskManager = Managers.getFileBackedTaskManager("filewriter.txt");
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task1);
 
         // Исполнение
@@ -112,7 +117,8 @@ class FileBackedTaskManagerTest {
     void isFileDataLoadedWhenFileIsNotEmpty() throws IOException {
         // Подготовка
         TaskManager taskManager = Managers.getFileBackedTaskManager("filewriter.txt");
-
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusYears(1));
+        taskManager.createTask(task1);
         // Исполнение
         int taskCount = taskManager.getAllTasksByType(TaskTypes.TASK).size();
 
@@ -125,7 +131,7 @@ class FileBackedTaskManagerTest {
         // Подготовка
         TaskManager fileTaskManager = Managers.getFileBackedTaskManager("filewriter.txt");
         TaskManager memoryTaskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
 
         // Исполнение
         fileTaskManager.createTask(task1);

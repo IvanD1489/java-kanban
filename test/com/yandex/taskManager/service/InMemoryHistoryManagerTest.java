@@ -5,6 +5,7 @@ import com.yandex.taskManager.model.Task;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ class InMemoryHistoryManagerTest {
     void isHistoryStored() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task1);
         taskManager.getTaskById(task1.getId());
         List<Task> checkHistory = new ArrayList<>();
@@ -31,7 +32,7 @@ class InMemoryHistoryManagerTest {
     void isHistoryAdded() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task1);
         taskManager.getTaskById(task1.getId());
 
@@ -46,9 +47,9 @@ class InMemoryHistoryManagerTest {
     void isReplacingAlreadyViewedTask() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusYears(1));
         taskManager.createTask(task1);
-        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task2);
         List<Task> checkHistory = new ArrayList<>();
         checkHistory.add(task2);
@@ -68,9 +69,9 @@ class InMemoryHistoryManagerTest {
     void isRemovedFromHistoryWhenDeleted() {
         // Подготовка
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW);
+        Task task1 = new Task("Задача 1", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now().plusYears(1));
         taskManager.createTask(task1);
-        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW);
+        Task task2 = new Task("Задача 2", "Обычная задача", Statuses.NEW, 60, LocalDateTime.now());
         taskManager.createTask(task2);
 
         taskManager.getTaskById(task1.getId());

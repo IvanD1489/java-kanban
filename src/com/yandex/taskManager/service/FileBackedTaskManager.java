@@ -4,13 +4,15 @@ import com.yandex.taskManager.exceptions.ManagerSaveException;
 import com.yandex.taskManager.model.*;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final String dataPath;
 
-    private static final String FILE_HEADER = "id,type,name,status,description,epic\n";
+    private static final String FILE_HEADER = "id,type,name,status,description,duration,start,epic\n";
 
     public FileBackedTaskManager(String dataPath) {
         this.dataPath = dataPath;
@@ -73,10 +75,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = data[2];
         Statuses status = Statuses.valueOf(data[3]);
         String desc = data[4];
+        long duration = Long.parseLong(data[5]);
+        LocalDateTime startTime = LocalDateTime.parse(data[6], DateTimeFormatter.ISO_DATE_TIME);
         if (type == TaskTypes.TASK) {
-            return new Task(name, desc, status, id);
+            return new Task(name, desc, status, duration, startTime, id);
         } else if (type == TaskTypes.SUBTASK) {
-            return new SubTask(name, desc, status, Integer.parseInt(data[5]), id);
+            return new SubTask(name, desc, status, Integer.parseInt(data[7]), duration, startTime, id);
         } else {
             return new Epic(name, desc, id);
         }
@@ -106,19 +110,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try (Writer fileWriter = new FileWriter(this.dataPath)) {
             fileWriter.append(FILE_HEADER);
-
-            for (Task task : tasks) {
-                fileWriter.append(task.toString()).append("\n");
-            }
-            for (Task task : epics) {
-                fileWriter.append(task.toString()).append("\n");
-            }
-            for (Task task : subTasks) {
-                fileWriter.append(task.toString()).append("\n");
-            }
+            appendTasksToFile(tasks, fileWriter);
+            appendTasksToFile(epics, fileWriter);
+            appendTasksToFile(subTasks, fileWriter);
         } catch (IOException e) {
             throw new ManagerSaveException(e.getMessage());
         }
+    }
+
+    private void appendTasksToFile(List<Task> tasks, Writer fileWriter) {
+        tasks.forEach(task -> {
+            try {
+                fileWriter.append(task.toString()).append("\n");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }

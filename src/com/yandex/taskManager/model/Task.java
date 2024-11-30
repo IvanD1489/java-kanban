@@ -1,5 +1,7 @@
 package com.yandex.taskManager.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -7,20 +9,26 @@ public class Task {
     private String name;
     private String description;
     private int id;
+    Duration duration;
+    LocalDateTime startTime;
 
     private Statuses status;
 
-    public Task(String name, String description, Statuses status) {
+    public Task(String name, String description, Statuses status, long duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.duration = Duration.ofMinutes(duration);
+        this.startTime = startTime;
     }
 
-    public Task(String name, String description, Statuses status, int id) {
+    public Task(String name, String description, Statuses status, long duration, LocalDateTime startTime, int id) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+        this.duration = Duration.ofMinutes(duration);
+        this.startTime = startTime;
     }
 
     public int getId() {
@@ -43,6 +51,18 @@ public class Task {
         return TaskTypes.TASK;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return this.startTime.plus(duration);
+    }
+
+    public long getDuration() {
+        return this.duration.toMinutes();
+    }
+
     public void setStatus(Statuses status) {
         this.status = status;
     }
@@ -59,9 +79,17 @@ public class Task {
         this.description = description;
     }
 
+    public void setDuration(long duration) {
+        this.duration = Duration.ofMinutes(duration);
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public String toString() {
-        return id + "," + "TASK," + name + "," + status + "," + description + ",";
+        return id + "," + "TASK," + name + "," + status + "," + description + "," + duration.toMinutes() + "," + startTime + ",";
     }
 
     @Override

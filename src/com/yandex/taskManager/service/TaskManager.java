@@ -37,4 +37,10 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
+    List<Task> getPrioritizedTasks();
+
+    boolean checkTaskIntersection();
+
+    boolean checkTaskIntersectionForUpdate(Task task);
+
 }
