@@ -9,15 +9,15 @@ import java.util.List;
 
 public interface TaskManager {
 
-    void createTask(Task task);
+    boolean createTask(Task task);
 
-    void createSubTask(SubTask subTask);
+    boolean createSubTask(SubTask subTask);
 
     void createEpic(Epic epic);
 
-    void updateTask(Task task);
+    boolean updateTask(Task task);
 
-    void updateSubTask(SubTask subTask);
+    boolean updateSubTask(SubTask subTask);
 
     void updateEpic(Epic epic);
 

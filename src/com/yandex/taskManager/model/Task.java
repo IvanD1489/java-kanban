@@ -4,14 +4,15 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.google.gson.Gson;
+
 public class Task {
 
     private String name;
     private String description;
     private int id;
-    Duration duration;
-    LocalDateTime startTime;
-
+    private Duration duration;
+    private LocalDateTime startTime;
     private Statuses status;
 
     public Task(String name, String description, Statuses status, long duration, LocalDateTime startTime) {
