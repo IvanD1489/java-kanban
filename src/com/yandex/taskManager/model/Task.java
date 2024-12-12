@@ -4,8 +4,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import com.google.gson.Gson;
-
 public class Task {
 
     private String name;
