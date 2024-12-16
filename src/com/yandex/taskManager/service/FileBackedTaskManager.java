@@ -21,15 +21,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createTask(Task task) {
-        super.createTask(task);
-        save();
+    public boolean createTask(Task task) {
+        if (super.createTask(task)) {
+            save();
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void createSubTask(SubTask subTask) {
-        super.createSubTask(subTask);
-        save();
+    public boolean createSubTask(SubTask subTask) {
+        if (super.createSubTask(subTask)) {
+            save();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -39,15 +45,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
-        save();
+    public boolean updateTask(Task task) {
+        if (super.updateTask(task)) {
+            save();
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
-        super.updateSubTask(subTask);
-        save();
+    public boolean updateSubTask(SubTask subTask) {
+        if (super.updateSubTask(subTask)) {
+            save();
+            return true;
+        }
+        return false;
     }
 
     @Override

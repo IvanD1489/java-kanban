@@ -29,7 +29,7 @@ public class SubTask extends Task {
     @Override
     public String toString() {
         return super.getId() + "," + "SUBTASK," + super.getName() + "," + super.getStatus() + "," +
-                super.getDescription() + "," + duration.toMinutes() + "," + startTime + "," + parentId;
+                super.getDescription() + "," + super.getDuration() + "," + super.getStartTime() + "," + parentId;
     }
 
     @Override

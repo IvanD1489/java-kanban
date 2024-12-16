@@ -18,33 +18,35 @@ public class InMemoryTaskManager implements TaskManager {
     private final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     @Override
-    public void createTask(Task task) {
+    public boolean createTask(Task task) {
         prioritizedTasks.add(task);
         if (checkTaskIntersection()) {
             prioritizedTasks.remove(task);
-            return;
+            return false;
         }
 
         task.setId(getNewTaskId());
         tasks.put(task.getId(), task);
+        return true;
     }
 
     @Override
-    public void createSubTask(SubTask subTask) {
+    public boolean createSubTask(SubTask subTask) {
         int epicId = subTask.getParentId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
-            return;
+            return false;
         }
         prioritizedTasks.add(subTask);
         if (checkTaskIntersection()) {
             prioritizedTasks.remove(subTask);
-            return;
+            return false;
         }
         subTask.setId(getNewTaskId());
         subTasks.put(subTask.getId(), subTask);
         epic.addChild(subTask.getId());
         recalculateEpicData(epicId);
+        return true;
     }
 
     @Override
@@ -54,21 +56,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public boolean updateTask(Task task) {
         if (checkTaskIntersectionForUpdate(task)) {
-            return;
+            return false;
         }
         tasks.put(task.getId(), task);
+        return true;
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
+    public boolean updateSubTask(SubTask subTask) {
         if (checkTaskIntersectionForUpdate(subTask)) {
-            return;
+            return false;
         }
         subTasks.put(subTask.getId(), subTask);
         int epicId = subTask.getParentId();
         recalculateEpicData(epicId);
+        return true;
     }
 
     @Override
@@ -92,12 +96,18 @@ public class InMemoryTaskManager implements TaskManager {
         switch (taskType) {
             case TASK -> {
                 tasks.values()
-                        .forEach(task -> historyManager.removeHistory(task.getId()));
+                        .forEach(task -> {
+                            historyManager.removeHistory(task.getId());
+                            prioritizedTasks.remove(task);
+                        });
                 tasks.clear();
             }
             case SUBTASK -> {
                 subTasks.values()
-                        .forEach(task -> historyManager.removeHistory(task.getId()));
+                        .forEach(task -> {
+                            historyManager.removeHistory(task.getId());
+                            prioritizedTasks.remove(task);
+                        });
                 subTasks.clear();
                 epics.values()
                         .forEach(task -> {
@@ -112,6 +122,7 @@ public class InMemoryTaskManager implements TaskManager {
                         .forEach(task -> historyManager.removeHistory(task.getId()));
                 subTasks.clear();
                 epics.clear();
+                prioritizedTasks.clear();
             }
         }
     }
@@ -219,10 +230,12 @@ public class InMemoryTaskManager implements TaskManager {
     protected void addToMap(Task task) {
         if (task.getType() == TaskTypes.TASK) {
             tasks.put(task.getId(), task);
+            prioritizedTasks.add(task);
         } else if (task.getType() == TaskTypes.SUBTASK) {
             final SubTask subTask = (SubTask) task;
             subTasks.put(task.getId(), subTask);
             epics.get(subTask.getParentId()).addChild(task.getId());
+            prioritizedTasks.add(task);
         } else {
             epics.put(task.getId(), (Epic) task);
         }
